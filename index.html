@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Catatan Mobil IN/OUT</title>
+  <script>
+    setInterval(() => {
+      const now = new Date();
+      const date = now.toLocaleDateString();
+      const time = now.toLocaleTimeString();
+      document.getElementById("realtimeClock").innerText = `${date} ${time}`;
+    }, 1000);
+  
+    function filterSuggestions() {
+      const input = document.getElementById('searchPlate').value.toLowerCase();
+      const data = JSON.parse(localStorage.getItem('inData') || '[]');
+      const suggestionsDiv = document.getElementById('suggestions');
+      suggestionsDiv.innerHTML = '';
+      data.forEach((item, index) => {
+        if (!item.out && item.plate.toLowerCase().includes(input)) {
+          const div = document.createElement('div');
+          div.textContent = item.plate + ' - ' + item.driver;
+          div.style.padding = '8px';
+          div.style.cursor = 'pointer';
+          div.onclick = () => selectOut(index);
+          suggestionsDiv.appendChild(div);
+        }
+      });
+    }
+
+  
+    setInterval(() => {
+      const now = new Date();
+      const date = now.toLocaleDateString();
+      const time = now.toLocaleTimeString();
+      const full = `${date} ${time}`;
+      const clockIn = document.getElementById("realtimeClock");
+      const clockOut = document.getElementById("realtimeClockOut");
+      if (clockIn) clockIn.innerText = full;
+      if (clockOut) clockOut.innerText = full;
+    }, 1000);
+
+    function openSuggestions() {
+      const input = document.getElementById('searchPlate').value.toLowerCase();
+      const data = JSON.parse(localStorage.getItem('inData') || '[]');
+      const suggestionsDiv = document.getElementById('suggestions');
+      suggestionsDiv.innerHTML = '';
+      data.forEach((item, index) => {
+        if (!item.out && item.plate.toLowerCase().includes(input)) {
+          const div = document.createElement('div');
+          div.textContent = item.plate + ' - ' + item.driver;
+          div.style.padding = '8px';
+          div.style.cursor = 'pointer';
+          div.style.borderBottom = '1px solid #ddd';
+          div.onclick = () => {
+            selectOut(index);
+            closeSuggestions();
+          };
+          suggestionsDiv.appendChild(div);
+        }
+      });
+      document.getElementById('suggestionModal').style.display = 'block';
+    }
+
+    function closeSuggestions() {
+      document.getElementById('suggestionModal').style.display = 'none';
+    }
+
+  </script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #e6f2ff;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #ffffff; box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .toggle-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .toggle-buttons button {
+      flex: 1;
+      padding: 15px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    input[readonly] {
+      background-color: #f0f8ff;
+    }
+
+    input, button {
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  transition: all 0.2s ease-in-out;
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    table, th, td {
+      border: 1px solid #4a90e2;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+
+    tr:hover {
+      background-color: #f0f0f0;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    
+    <div class="toggle-buttons">
+      <button style="background-color:#4a90e2;color:white;border:none;border-radius:6px;box-shadow:0 2px 4px rgba(0,0,0,0.1);transition:0.3s;" onclick="showForm('in')">IN</button>
+      <button style="background-color:#4a90e2;color:white;border:none;border-radius:6px;box-shadow:0 2px 4px rgba(0,0,0,0.1);transition:0.3s;" onclick="showForm('out')">OUT</button>
+    </div>
+
+    <!-- IN FORM -->
+    <div id="inForm">
+      <div class="form-group">
+        <label>Nomor Urut Antrian</label>
+        <input type="text" id="inQueue" />
+      </div>
+      <div class="form-group">
+        <label>Nomor Plat Kendaraan</label>
+        <input type="text" id="inPlate" />
+      </div>
+      <div class="form-group">
+        <label>Nama Sopir</label>
+        <input type="text" id="inDriver" />
+      </div>
+      <div class="form-group">
+        <label>Jam Masuk</label>
+        <div id="realtimeClock" style="font-size: 14px; color: #444; margin-bottom: 5px; font-weight: bold;"></div>
+        <input type="text" id="inTime" readonly />
+        <button style="background-color:#4a90e2;color:white;border:none;border-radius:6px;box-shadow:0 2px 4px rgba(0,0,0,0.1);transition:0.3s;" onclick="getTime('inTime')">Ambil Jam Sekarang</button>
+      </div>
+      <div class="form-actions" style="margin-top:10px;" >
+        <button style="background-color:#4a90e2;color:white;border:none;border-radius:6px;box-shadow:0 2px 4px rgba(0,0,0,0.1);transition:0.3s;" onclick="saveIn()">Save</button>
+        <button style="background-color:#4a90e2;color:white;border:none;border-radius:6px;box-shadow:0 2px 4px rgba(0,0,0,0.1);transition:0.3s;" onclick="resetForm('in')">Cancel</button>
+      </div>
+    </div>
+
+    <!-- OUT FORM -->
+<style>.suggestions { border: 1px solid #ccc; background: white; max-height: 150px; overflow-y: auto; }</style>
+    <div id="outForm" class="hidden">
+      <div class="form-group">
+  <label>Cari Nomor Plat</label>
+  <div style="display:flex; gap:6px;">
+  <input type="text" id="searchPlate" placeholder="Ketik plat kendaraan..." style="flex:3;"/>
+  <button onclick="openSuggestions()" style="flex:1; padding:8px; background-color:#4a90e2; color:white; border:none; border-radius:6px; box-shadow:0 2px 4px rgba(0,0,0,0.1); transition:0.3s;">Cari</button>
+
+</div>
+  <div id="suggestionModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
+      <div style="background:white; max-width:400px; margin:10% auto; padding:20px; border-radius:8px;">
+        <h3>Hasil Pencarian</h3>
+        <div id="suggestions" style="max-height:200px; overflow-y:auto;"></div>
+        <button style="background-color:#4a90e2;color:white;border:none;border-radius:6px;box-shadow:0 2px 4px rgba(0,0,0,0.1);transition:0.3s;" onclick="closeSuggestions()" style="margin-top:10px;">Tutup</button>
+      </div>
+    </div>
+</div>
+      <div id="outDetail">
+        <div class="form-group">
+          <label>Nomor Plat Kendaraan</label>
+          <input type="text" id="outPlate" readonly />
+        </div>
+        <div class="form-group">
+          <label>Nama Sopir</label>
+          <input type="text" id="outDriver" readonly />
+        </div>
+        <div class="form-group">
+          <label>Jam Masuk</label>
+          <input type="text" id="outInTime" readonly />
+        </div>
+        <div class="form-group">
+          <div style="font-size: 13px; color:#555; margin-bottom: 5px;">⏰ <span id="realtimeClockOut"></span></div>
+        <label>Jam Keluar</label>
+          <input type="text" id="outTime" readonly />
+          <button style="background-color:#4a90e2;color:white;border:none;border-radius:6px;box-shadow:0 2px 4px rgba(0,0,0,0.1);transition:0.3s;" onclick="getTime('outTime')">Ambil Jam Sekarang</button>
+        </div>
+        <div class="form-actions" style="margin-top:10px;" >
+          <button style="background-color:#4a90e2;color:white;border:none;border-radius:6px;box-shadow:0 2px 4px rgba(0,0,0,0.1);transition:0.3s;" onclick="saveOut()">Save</button>
+          <button style="background-color:#4a90e2;color:white;border:none;border-radius:6px;box-shadow:0 2px 4px rgba(0,0,0,0.1);transition:0.3s;" onclick="resetForm('out')">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions" style="margin-top: 20px;">
+      <button style="background-color:#4a90e2;color:white;border:none;border-radius:6px;box-shadow:0 2px 4px rgba(0,0,0,0.1);transition:0.3s;" onclick="clearData()">Reset Semua Data</button>
+    </div>
+  </div>
+
+  <script>
+    let selectedIndex = -1;
+
+    function showForm(type) {
+      document.getElementById('inForm').classList.add('hidden');
+      document.getElementById('outForm').classList.add('hidden');
+      if (type === 'in') {
+        document.getElementById('inForm').classList.remove('hidden');
+      } else {
+        document.getElementById('outForm').classList.remove('hidden');
+        populateTable();
+      }
+    }
+
+    function getTime(id) {
+      const now = new Date();
+      const date = now.toISOString().split('T')[0];
+      const time = now.toTimeString().split(' ')[0];
+      document.getElementById(id).value = `${date} // ${time}`;
+    }
+
+    function saveIn() {
+      const queue = document.getElementById('inQueue').value;
+      const plate = document.getElementById('inPlate').value;
+      const driver = document.getElementById('inDriver').value;
+      const time = document.getElementById('inTime').value;
+
+      if (!queue || !plate || !driver || !time) {
+        alert('Semua field harus diisi!');
+        return;
+      }
+
+      const data = JSON.parse(localStorage.getItem('inData') || '[]');
+      data.push({ queue, plate, driver, time, out: null });
+      localStorage.setItem('inData', JSON.stringify(data));
+      alert('Data IN berhasil disimpan!');
+      resetForm('in');
+    }
+
+    function populateTable() {
+      const data = JSON.parse(localStorage.getItem('inData') || '[]');
+      const table = document.getElementById('inTable');
+      let html = '<tr><th>#</th><th>Plat</th><th>Supir</th><th>Jam Masuk</th></tr>';
+      data.forEach((item, index) => {
+        if (!item.out) {
+          html += `<tr onclick="selectOut(${index})"><td>${index + 1}</td><td>${item.plate}</td><td>${item.driver}</td><td>${item.time}</td></tr>`;
+        }
+      });
+      table.innerHTML = html;
+    }
+
+    function selectOut(index) {
+      const data = JSON.parse(localStorage.getItem('inData'));
+      selectedIndex = index;
+      const item = data[index];
+      document.getElementById('outPlate').value = item.plate;
+      document.getElementById('outDriver').value = item.driver;
+      document.getElementById('outInTime').value = item.time;
+      document.getElementById('outTime').value = '';
+      document.getElementById('outDetail').classList.remove('hidden');
+    }
+
+    function saveOut() {
+      const outTime = document.getElementById('outTime').value;
+      if (!outTime || selectedIndex === -1) {
+        alert('Silakan pilih data dan ambil jam keluar terlebih dahulu!');
+        return;
+      }
+
+      const data = JSON.parse(localStorage.getItem('inData'));
+      data[selectedIndex].out = outTime;
+      localStorage.setItem('inData', JSON.stringify(data));
+      alert('Data OUT berhasil disimpan!');
+      selectedIndex = -1;
+      resetForm('out');
+    }
+
+    function resetForm(type) {
+      if (type === 'in') {
+        document.getElementById('inQueue').value = '';
+        document.getElementById('inPlate').value = '';
+        document.getElementById('inDriver').value = '';
+        document.getElementById('inTime').value = '';
+      } else {
+        document.getElementById('inTable').innerHTML = '';
+        document.getElementById('outDetail').classList.add('hidden');
+      }
+    }
+
+    function clearData() {
+      if (confirm('Yakin ingin hapus semua data?')) {
+        localStorage.removeItem('inData');
+        alert('Semua data dihapus!');
+        resetForm('out');
+        resetForm('in');
+      }
+    }
+  
+    function filterSuggestions() {
+      const input = document.getElementById('searchPlate').value.toLowerCase();
+      const data = JSON.parse(localStorage.getItem('inData') || '[]');
+      const suggestionsDiv = document.getElementById('suggestions');
+      suggestionsDiv.innerHTML = '';
+      data.forEach((item, index) => {
+        if (!item.out && item.plate.toLowerCase().includes(input)) {
+          const div = document.createElement('div');
+          div.textContent = item.plate + ' - ' + item.driver;
+          div.style.padding = '8px';
+          div.style.cursor = 'pointer';
+          div.onclick = () => selectOut(index);
+          suggestionsDiv.appendChild(div);
+        }
+      });
+    }
+
+  
+    setInterval(() => {
+      const now = new Date();
+      const date = now.toLocaleDateString();
+      const time = now.toLocaleTimeString();
+      const full = `${date} ${time}`;
+      const clockIn = document.getElementById("realtimeClock");
+      const clockOut = document.getElementById("realtimeClockOut");
+      if (clockIn) clockIn.innerText = full;
+      if (clockOut) clockOut.innerText = full;
+    }, 1000);
+
+    function openSuggestions() {
+      const input = document.getElementById('searchPlate').value.toLowerCase();
+      const data = JSON.parse(localStorage.getItem('inData') || '[]');
+      const suggestionsDiv = document.getElementById('suggestions');
+      suggestionsDiv.innerHTML = '';
+      data.forEach((item, index) => {
+        if (!item.out && item.plate.toLowerCase().includes(input)) {
+          const div = document.createElement('div');
+          div.textContent = item.plate + ' - ' + item.driver;
+          div.style.padding = '8px';
+          div.style.cursor = 'pointer';
+          div.style.borderBottom = '1px solid #ddd';
+          div.onclick = () => {
+            selectOut(index);
+            closeSuggestions();
+          };
+          suggestionsDiv.appendChild(div);
+        }
+      });
+      document.getElementById('suggestionModal').style.display = 'block';
+    }
+
+    function closeSuggestions() {
+      document.getElementById('suggestionModal').style.display = 'none';
+    }
+
+  </script>
+</body>
+</html>
