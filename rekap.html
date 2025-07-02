@@ -1,0 +1,163 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rekap Absensi Kendaraan</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #e6f2ff;
+      color: #1f2937;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .title {
+      text-align: center;
+      color: #1e40af;
+      margin-bottom: 5px;
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 14px;
+      color: #4b5563;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    th, td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #cbd5e1;
+      text-align: left;
+    }
+
+    th {
+      background-color: #4a90e2;
+      color: white;
+    }
+
+    td .badge {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 13px;
+    }
+
+    .aktif { background-color: #ef4444; color: white; }
+    .selesai { background-color: #facc15; color: #1f2937; }
+    .keluar { background-color: #10b981; color: white; }
+
+    .summary {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .summary div {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .dot.aktif { background-color: #ef4444; }
+    .dot.selesai { background-color: #facc15; }
+    .dot.keluar { background-color: #10b981; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 class="title">MONITORING STATUS KENDARAAN<br>PT SPC</h2>
+    <p class="subtitle" id="currentTime">Tanggal - Jam</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Plat Kendaraan</th>
+          <th>Aktivitas</th>
+          <th>No. Doc</th>
+          <th>Lokasi</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>B 1234 XYZ</td>
+          <td>Bongkar</td>
+          <td>UL-00123</td>
+          <td>Gudang</td>
+          <td><span class="badge aktif">AKTIF</span></td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>B 4321 ABC</td>
+          <td>Muat</td>
+          <td>LD-00456</td>
+          <td>Timbangan 2</td>
+          <td><span class="badge aktif">AKTIF</span></td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>B 7890 DEF</td>
+          <td>Bongkar</td>
+          <td>UL-00124</td>
+          <td>Administrasi</td>
+          <td><span class="badge selesai">SELESAI</span></td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>B 0987 GHI</td>
+          <td>Muat</td>
+          <td>LD-00457</td>
+          <td>Keluar Parkir</td>
+          <td><span class="badge keluar">KELUAR</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="summary">
+      <div><span class="dot aktif"></span> AKTIF : 2</div>
+      <div><span class="dot selesai"></span> SELESAI : 1</div>
+      <div><span class="dot keluar"></span> KELUAR : 1</div>
+    </div>
+  </div>
+
+  <script>
+    setInterval(() => {
+      const now = new Date();
+      const options = { day: 'numeric', month: 'long', year: 'numeric' };
+      const date = now.toLocaleDateString('id-ID', options);
+      const time = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      document.getElementById("currentTime").innerText = `${date} - ${time} WIB`;
+    }, 1000);
+  </script>
+</body>
+</html>

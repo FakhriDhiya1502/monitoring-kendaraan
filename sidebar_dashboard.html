@@ -1,0 +1,74 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard Mobil</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+    }
+
+    .sidebar {
+      width: 220px;
+      background-color: #2c3e50;
+      color: white;
+      height: 100vh;
+      padding-top: 20px;
+      position: fixed;
+    }
+
+    .sidebar h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 20px;
+    }
+
+    .sidebar a {
+      display: block;
+      color: white;
+      padding: 12px 20px;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    .sidebar a:hover {
+      background-color: #34495e;
+    }
+
+    .content {
+      margin-left: 220px;
+      padding: 20px;
+      flex: 1;
+      background-color: #f4f6f8;
+      min-height: 100vh;
+    }
+
+    iframe {
+      border: none;
+      width: 100%;
+      height: 90vh;
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>📋 Menu</h2>
+    <a href="#" onclick="loadPage('inout.html')">🚗 IN / OUT</a>
+    <a href="#" onclick="loadPage('rekap.html')">📊 Rekap Absensi</a>
+  </div>
+
+  <div class="content">
+    <iframe id="pageFrame" src="inout.html"></iframe>
+  </div>
+
+  <script>
+    function loadPage(page) {
+      document.getElementById('pageFrame').src = page;
+    }
+  </script>
+</body>
+</html>
